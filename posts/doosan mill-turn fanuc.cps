@@ -1118,6 +1118,82 @@ function activateMachine(section) {
   return turret;
 }
 
+function writeChipWardenMetadata() {
+  // Chip Warden metadata injection
+  // Extracts useful information for Russ to manage and version G-code files
+
+  var projectName = "unknown-project";
+  var partName = "unknown-part";
+  var setupName = "unknown-setup";
+
+  // Extract part name from program name or comment
+  if (programName) {
+    partName = programName;
+  }
+
+  if (programComment) {
+    projectName = programComment;
+  }
+
+  // Try to get more info from section if available
+  if (hasGlobalParameter("job-description")) {
+    projectName = getGlobalParameter("job-description");
+  }
+
+  // Get current timestamp
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = String(now.getMonth() + 1);
+  if (month.length < 2) { month = "0" + month; }
+  var day = String(now.getDate());
+  if (day.length < 2) { day = "0" + day; }
+  var hour = String(now.getHours());
+  if (hour.length < 2) { hour = "0" + hour; }
+  var minute = String(now.getMinutes());
+  if (minute.length < 2) { minute = "0" + minute; }
+
+  var timestamp = year + "-" + month + "-" + day + "-" + hour + minute;
+
+  // Count total sections (operations)
+  var sectionCount = getNumberOfSections();
+
+  // Count unique tools
+  var tools = {};
+  var toolCount = 0;
+  for (var i = 0; i < sectionCount; ++i) {
+    var section = getSection(i);
+    var tool = section.getTool();
+    var toolId = tool.number;
+    if (!tools[toolId]) {
+      tools[toolId] = true;
+      toolCount++;
+    }
+  }
+
+  // Write metadata block
+  writeComment("CHIP-WARDEN-START");
+  writeComment("PROJECT: " + filterText(String(projectName), permittedCommentChars));
+  writeComment("PART: " + filterText(String(partName), permittedCommentChars));
+  writeComment("POSTED: " + timestamp);
+  writeComment("OPERATIONS: " + sectionCount);
+  writeComment("TOOL-COUNT: " + toolCount);
+  writeComment("MACHINE: " + getProperty("machineModel"));
+
+  // Add first section info as setup name
+  if (sectionCount > 0) {
+    var firstSection = getSection(0);
+    if (hasParameter("operation-comment")) {
+      setupName = getParameter("operation-comment");
+    } else if (firstSection.hasParameter("operation-comment")) {
+      setupName = firstSection.getParameter("operation-comment");
+    }
+    writeComment("SETUP: " + filterText(String(setupName), permittedCommentChars));
+  }
+
+  writeComment("CHIP-WARDEN-END");
+  writeln("");
+}
+
 function onOpen() {
   if (getProperty("useRadius")) {
     maximumCircularSweep = toRad(90); // avoid potential center calculation errors for CNC
@@ -1195,6 +1271,8 @@ function onOpen() {
     }
   }
 
+  // Chip Warden metadata
+  writeChipWardenMetadata();
 
   // dump machine configuration
   var vendor = machineConfiguration.getVendor();
