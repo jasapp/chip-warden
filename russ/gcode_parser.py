@@ -116,12 +116,22 @@ class GCodeParser:
                 if match:
                     comment = match.group(1)
 
-                    # Parse key: value format
+                    # Parse key: value or key value format
                     if ':' in comment:
                         key, value = comment.split(':', 1)
-                        key = key.strip().lower().replace('-', '_')
-                        value = value.strip()
-                        metadata[key] = value
+                    elif ' ' in comment:
+                        # Handle "PROJECT value" format (no colon)
+                        parts = comment.split(None, 1)  # Split on first whitespace
+                        if len(parts) == 2:
+                            key, value = parts
+                        else:
+                            continue
+                    else:
+                        continue
+
+                    key = key.strip().lower().replace('-', '_')
+                    value = value.strip()
+                    metadata[key] = value
 
         # Validate we have minimum required fields
         required_fields = ['project', 'part', 'posted']
