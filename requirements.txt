@@ -1,0 +1,14 @@
+# Chip Warden (Russ) - Python Dependencies
+
+# File system monitoring
+watchdog>=3.0.0
+
+# YAML configuration
+PyYAML>=6.0
+
+# Telegram bot
+python-telegram-bot>=20.0
+
+# For future enhancements
+# anthropic>=0.7.0  # Claude API integration
+# notion-client>=2.0.0  # Notion database logging

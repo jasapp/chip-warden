@@ -1,0 +1,19 @@
+[Unit]
+Description=Chip Warden (Russ) - G-code Version Control Agent
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/path/to/chip-warden
+Environment="PATH=/path/to/chip-warden/venv/bin:/usr/local/bin:/usr/bin"
+ExecStart=/path/to/chip-warden/venv/bin/python3 /path/to/chip-warden/russ/russ.py --config /path/to/chip-warden/russ/config/config.yml
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=append:/path/to/chip-warden/russ/logs/russ.log
+StandardError=append:/path/to/chip-warden/russ/logs/russ-error.log
+
+[Install]
+WantedBy=multi-user.target
