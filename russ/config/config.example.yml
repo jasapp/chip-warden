@@ -1,0 +1,97 @@
+# Chip Warden (Russ) Configuration
+# Copy this to config.yml and customize for your setup
+
+# Directories
+directories:
+  # Where Fusion 360 posts files (Samba share)
+  fusion_output: "/path/to/samba/fusion-output"
+
+  # Where CNC machines access files via FTP
+  ftp_share: "/path/to/ftp/cnc-programs"
+
+  # Local git repo for parts history
+  parts_archive: "/path/to/chip-warden/parts-archive"
+
+  # Log directory
+  logs: "/path/to/chip-warden/russ/logs"
+
+# File Management
+file_management:
+  # Auto-delete file from FTP after this many minutes
+  # Set to 0 to disable auto-cleanup (use manual Telegram command instead)
+  ftp_cleanup_minutes: 10
+
+  # Keep this many versions in FTP directory (older ones archived to git only)
+  keep_versions_in_ftp: 2
+
+  # File naming pattern for versioned files
+  # Available variables: {part_name}, {version}, {timestamp}, {project}
+  naming_pattern: "{part_name}_v{version}_{timestamp}.nc"
+
+# Git Configuration
+git:
+  # Auto-commit new files
+  auto_commit: true
+
+  # Push to remote automatically (requires GitHub configured)
+  auto_push: false
+
+  # Commit message template
+  commit_message: |
+    {part_name} v{version} posted
+
+    Project: {project}
+    Setup: {setup}
+    Posted: {timestamp}
+
+# Telegram Bot
+telegram:
+  # Bot token (get from @BotFather)
+  # Store in telegram.token file or set TELEGRAM_BOT_TOKEN env var
+  enabled: true
+
+  # Your Telegram chat ID (send /start to bot to get this)
+  chat_id: "YOUR_CHAT_ID"
+
+  # Notify on new file posted
+  notify_on_post: true
+
+  # Notify on FTP cleanup
+  notify_on_cleanup: false
+
+  # Enable bot commands (/cleanup, /status, etc.)
+  enable_commands: true
+
+# G-code Analysis
+analysis:
+  # Parse G-code for metrics
+  enabled: true
+
+  # Generate diff report on version changes
+  diff_reports: true
+
+  # Warn on significant changes
+  warn_on_major_changes: true
+
+  # Thresholds for warnings
+  thresholds:
+    feed_rate_change_percent: 20
+    tool_count_change: 2
+    estimated_time_change_percent: 25
+
+# Claude API Integration (future)
+claude:
+  enabled: false
+  api_key_file: "config/claude.key"
+
+# Notion Integration (future)
+notion:
+  enabled: false
+  database_id: ""
+  api_key_file: "config/notion.key"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  max_log_size_mb: 10
+  backup_count: 5

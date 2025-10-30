@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Logs
+*.log
+russ/logs/*.log
+
+# Config with secrets
+russ/config/secrets.yml
+russ/config/telegram.token
+russ/config/.env
+
+# Test G-code files (keep examples, ignore test outputs)
+test-output/
+*.nc.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
